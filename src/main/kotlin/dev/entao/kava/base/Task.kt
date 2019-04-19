@@ -35,6 +35,27 @@ object Task {
                     val ls = ArrayList<CleanBlock>(Task.cleanMap.values)
                     for (b in ls) {
                         try {
+                            b()
+                        } catch (ex: Throwable) {
+                            Yog.e(ex)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private class CleanCallback(private val callback: () -> Unit) : Runnable {
+        override fun run() {
+            try {
+                callback()
+            } catch (ex: Throwable) {
+                Yog.e(ex)
+            } finally {
+                if (cleanMap.isNotEmpty()) {
+                    val ls = ArrayList<CleanBlock>(Task.cleanMap.values)
+                    for (b in ls) {
+                        try {
                             b.invoke()
                         } catch (ex: Throwable) {
                             Yog.e(ex)
@@ -53,15 +74,15 @@ object Task {
 
 
     fun back(callback: () -> Unit): Future<*> {
-        return es.submit(callback)
+        return es.submit(CleanCallback(callback))
     }
 
     fun afterMinutes(ms: Int, callback: () -> Unit): ScheduledFuture<*> {
-        return es.schedule(callback, ms.toLong(), TimeUnit.MINUTES)
+        return es.schedule(CleanCallback(callback), ms.toLong(), TimeUnit.MINUTES)
     }
 
     fun afterSeconds(secs: Int, callback: () -> Unit): ScheduledFuture<*> {
-        return es.schedule(callback, secs.toLong(), TimeUnit.SECONDS)
+        return es.schedule(CleanCallback(callback), secs.toLong(), TimeUnit.SECONDS)
     }
 }
 
