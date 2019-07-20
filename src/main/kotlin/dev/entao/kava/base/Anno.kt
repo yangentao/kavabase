@@ -3,6 +3,19 @@ package dev.entao.kava.base
 import kotlin.reflect.*
 import kotlin.reflect.full.findAnnotation
 
+
+//字段长度--字符串
+@Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD, AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Length(val value: Int, val msg: String = "")
+
+
+//是否忽略
+@Target(AnnotationTarget.PROPERTY, AnnotationTarget.FIELD, AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Exclude
+
+
 //表或字段(属性)的名字
 //路由时, controller名字或action名字
 @Target(AnnotationTarget.CLASS,
