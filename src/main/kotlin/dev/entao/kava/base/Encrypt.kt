@@ -3,6 +3,7 @@ package dev.entao.kava.base
 import java.security.MessageDigest
 import java.util.*
 import javax.crypto.Cipher
+import javax.crypto.Mac
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.DESKeySpec
 import javax.crypto.spec.IvParameterSpec
@@ -13,6 +14,21 @@ import javax.crypto.spec.SecretKeySpec
  */
 
 object Encrypt {
+
+    fun sha256(s: String): String {
+        val md = MessageDigest.getInstance("SHA-256")
+        md.update(s.toByteArray())
+        val d = md.digest()
+        return Hex.encode(d)
+    }
+
+    fun hmacSha256(data: String, key: String): String {
+        val m = Mac.getInstance("HmacSHA256")
+        val sk = SecretKeySpec(key.toByteArray(), "HmacSHA256")
+        m.init(sk)
+        val d = m.doFinal(data.toByteArray())
+        return Hex.encode(d)
+    }
 
     fun md5(value: String): String {
         val md5 = MessageDigest.getInstance("MD5")
