@@ -4,7 +4,6 @@ package dev.entao.kava.base
 
 
 import org.w3c.dom.Element
-import org.w3c.dom.Node
 import java.io.StringWriter
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.OutputKeys
@@ -12,13 +11,18 @@ import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 
-class XmlNode(val element: Node) {
+val String.xmlEscaped: String
+    get() {
+        return this.replaceChars('<' to "&lt;", '>' to "&gt;", '&' to "&amp;", '"' to "&quot;", '\'' to "&apos;")
+    }
 
-    fun node(name: String, vararg ps: Pair<String, Any>, block: XmlNode.() -> Unit): XmlNode {
+class NodeBuild(val element: Element) {
+
+    fun element(name: String, vararg attrPairs: Pair<String, Any>, block: NodeBuild.() -> Unit): NodeBuild {
         val e = element.ownerDocument.createElement(name)
         this.element.appendChild(e)
-        val n = XmlNode(e)
-        for (p in ps) {
+        val n = NodeBuild(e)
+        for (p in attrPairs) {
             n.attr(p.first, p.second.toString())
         }
         n.block()
@@ -31,9 +35,7 @@ class XmlNode(val element: Node) {
     }
 
     fun attr(key: String, value: String) {
-        if (element is Element) {
-            element.setAttribute(key, value)
-        }
+        element.setAttribute(key, value)
     }
 
 
@@ -74,14 +76,14 @@ class XmlNode(val element: Node) {
 
 }
 
-fun xmlRoot(rootName: String, vararg ps: Pair<String, Any>, block: XmlNode.() -> Unit): XmlNode {
+fun xmlBuild(rootName: String, vararg attrPairs: Pair<String, Any>, block: NodeBuild.() -> Unit): NodeBuild {
     val fac = DocumentBuilderFactory.newInstance()
     val db = fac.newDocumentBuilder()
     val doc = db.newDocument()
     val e = doc.createElement(rootName)
     doc.appendChild(e)
-    val n = XmlNode(e)
-    for (p in ps) {
+    val n = NodeBuild(e)
+    for (p in attrPairs) {
         n.attr(p.first, p.second.toString())
     }
     n.block()
@@ -89,9 +91,9 @@ fun xmlRoot(rootName: String, vararg ps: Pair<String, Any>, block: XmlNode.() ->
 }
 
 fun testXml() {
-    val a = xmlRoot("Person", "age" to 38) {
-        node("child", "name" to "suo", "age" to 9) {
-            node("school") {
+    val a = xmlBuild("Person", "age" to 38) {
+        element("child", "name" to "suo", "age" to 9) {
+            element("school") {
                 cdata("WenYuan")
             }
         }
