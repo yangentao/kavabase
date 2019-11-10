@@ -5,10 +5,11 @@ package dev.entao.kava.base
  */
 
 val PROGRESS_DELAY = 100
+
 interface Progress {
     fun onStart(total: Int)
 
     fun onProgress(current: Int, total: Int, percent: Int)
 
-    fun onFinish()
+    fun onFinish(success: Boolean)
 }

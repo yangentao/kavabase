@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.entao.kava.base
 
 import java.text.Collator
