@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.entao.kava.base
 
 import java.text.SimpleDateFormat
@@ -8,9 +10,13 @@ import java.util.*
  */
 
 
-val Int.seconds: Long get() = this * 1000L
-val Int.minutes: Long get() = this * 1000L * 60L
-val Int.hours: Long get() = this * 1000L * 3600L
+val Int.SEC: Long get() = this * 1000L
+val Int.MIN: Long get() = this * 60_000L
+val Int.HOR: Long get() = this * 3600_000L
+
+//val Int.seconds: Long get() = this * 1000L
+//val Int.minutes: Long get() = this * 1000L * 60L
+//val Int.hours: Long get() = this * 1000L * 3600L
 
 val Long.myDate: MyDate get() = MyDate(this)
 
